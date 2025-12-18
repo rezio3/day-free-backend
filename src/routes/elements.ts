@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import { getDatabase } from "../config/database";
 import { ObjectId } from "mongodb";
-import SibApiV3Sdk from "@sendinblue/client";
+import * as SibApiV3Sdk from "@sendinblue/client";
 
 const router = Router();
 
