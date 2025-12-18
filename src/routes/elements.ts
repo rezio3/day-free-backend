@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import { getDatabase } from "../config/database";
 import { ObjectId } from "mongodb";
+import SibApiV3Sdk from "@sendinblue/client";
 
 const router = Router();
 
@@ -9,7 +10,14 @@ interface Element {
   title: string;
   num: number;
 }
+// Tworzymy instancję TransactionalEmailsApi
+const brevoApi = new SibApiV3Sdk.TransactionalEmailsApi();
 
+// Ustawiamy API Key
+brevoApi.setApiKey(
+  SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey,
+  process.env.BREVO_API_KEY || ""
+);
 // GET - pobierz wszystkie elementy
 router.get("/elements", async (req: Request, res: Response) => {
   try {
@@ -55,7 +63,16 @@ router.delete("/elements/:id", async (req: Request, res: Response) => {
         message: "Element nie znaleziony",
       });
     }
-
+    const sendSmtpEmail = {
+      sender: {
+        email: "wavetrace.music@gmail.com",
+        name: "FREE-DAY",
+      },
+      to: [{ email: "jakub.rezler96@gmail.com", name: "FREE-DAY" }],
+      subject: "OGARNIASZ DZISIAJ DZIEŃ",
+      textContent: `DZISIAJ TY OGARNIASZ`,
+    };
+    await brevoApi.sendTransacEmail(sendSmtpEmail);
     res.json({
       success: true,
       message: "Element został usunięty",
